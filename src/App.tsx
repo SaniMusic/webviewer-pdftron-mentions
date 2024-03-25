@@ -1,26 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
+'use strict'
+import WebViewer from '@pdftron/webviewer';
+import { useEffect, useRef } from 'react';
+
 import './App.css';
 
-function App() {
+const App = () => {
+  const viewer = useRef(null);
+
+  // if using a class, equivalent of componentDidMount 
+  useEffect(() => {
+    WebViewer.WebComponent({
+      path: '/webviewer/lib',
+        initialDoc: '/files/PDFTRON_about.pdf',
+        licenseKey: 'your_license_key'  // sign up to get a free trial key at https://dev.apryse.com
+        // @ts-ignore
+    }, viewer.current)
+      .then(instance => {
+        const transformedUserArray = [
+          {
+            id: '1',
+            name: 'Sani Music',
+            email: 'sani.music@test.com'
+          },
+          {
+            id: '2',
+            name: 'Patric Ronge',
+            email: 'patricRonge@test.com'
+          }
+        ]
+  
+        instance.UI.mentions.setUserData(transformedUserArray);
+        const { UI, Core } = instance;
+        const { documentViewer, annotationManager, Tools, Annotations } = Core;
+        // call methods from UI, Core, documentViewer and annotationManager as needed
+    
+        documentViewer.addEventListener('documentLoaded', () => {
+          // call methods relating to the loaded document
+        });
+    
+        instance.UI.loadDocument('https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf');
+      })
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="header">React sample</div>
+      <div className="webviewer" ref={viewer}></div>
     </div>
   );
-}
+};
 
 export default App;
